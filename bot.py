@@ -40,7 +40,7 @@ def contact(update, context):
 #     update.message.reply_text(f"You said {update.message.text}, use the commands using /")
 
 
-Token = ("5650433111:AAGg_7eRAGaQJg7s4GKJg28PwdOmIYim7qU")
+Token = ("")
 #print(bot.get_me())
 updater = telegram.ext.Updater(Token, use_context=True)
 disp = updater.dispatcher
