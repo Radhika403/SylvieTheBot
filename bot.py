@@ -1,4 +1,8 @@
 import telegram.ext 
+from decouple import config
+
+USERNAME = config('USERNAME')
+TOKEN = config('TOKEN')
 
 def start(update, context):
     update.message.reply_text("""Hello!
@@ -40,9 +44,9 @@ def contact(update, context):
 #     update.message.reply_text(f"You said {update.message.text}, use the commands using /")
 
 
-Token = ("")
+# Token = (" ")
 #print(bot.get_me())
-updater = telegram.ext.Updater(Token, use_context=True)
+updater = telegram.ext.Updater(TOKEN, use_context=True)
 disp = updater.dispatcher
 
 disp.add_handler(telegram.ext.CommandHandler('start',start))
