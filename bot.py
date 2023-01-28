@@ -1,25 +1,32 @@
 from decouple import config
 from datetime import date
-import csv
 import time
-import telegram
-import telegram.ext 
 import datetime
+import csv
+import telegram
+import telegram.ext
 import long_responses as long
 import responses as rp
 import emoji
 from googletrans import Translator
 
+# Importing login credentials and Telegram API for bot from .env file
 USERNAME = config('USERNAME')
 TOKEN = config('TOKEN')
 COMMAND = "init"
+
+# Making object of Translator
 translator = Translator(service_urls=['translate.googleapis.com'])
 
+# Start command to start the bot
 def start(update, context):
     global COMMAND
     COMMAND = 'start'
     update.message.reply_text(emoji.emojize("Hello! :open_hands:\nI am Sylvie, bot head at 'Bots Around Us'. :robot:\nTo dive in type /help."))
-    
+#  emoji.emojize is used to send emoji in the message.
+#  update.message.reply_text is replying the text to user
+
+# Help command lists all the available commands that can be used to run the bot
 def help(update,context):
     global COMMAND
     COMMAND = 'help'
@@ -36,10 +43,12 @@ def help(update,context):
     /announcements -> Recent Notices and Announcements
     """))
 
+# hackthon command:It has all the details about the hackathon
 def hackathon(update, context):
     global COMMAND
     COMMAND = 'hackathon'
     time.sleep(0.5)
+    #  The time.sleep function generates a gap between two messages
     update.message.reply_text("So, 'Bots Around Us' is a hackathon with a vision of building fun and beautiful bots like me.\n\nUnder this student-led hackathon you will get a chance to compete with participants all over India. The team who will build the best bot will be declared as winner!!")
     time.sleep(0.8)
     update.message.reply_text('''
@@ -57,6 +66,8 @@ All the participants will be getting participation certis signed by Meta Head'''
     time.sleep(0.8)
     update.message.reply_text("What are you waiting for? Head to '/registration' to register yourself!!")
 
+# Registration command: All registration-related tasks will be handled by it.
+# In addition, it has three functions, namely register, cancel, and confirm.
 def registration(update, context):
     global COMMAND
     COMMAND = 'registration'
@@ -67,6 +78,7 @@ def registration(update, context):
 /cancel   -> Cancel your registration""")
     update.message.reply_text("Make sure to register before the deadline - 18th February as this will give you an opportunity to collaborate and compete with students from different universities and develop a telegram bot. You stand to win exciting cash prizes and certificates. It's a chance to learn, develop and present your protypes and seek feedback on the same. ")
 
+# Resources command: It will provide users with resources, sample projects, and documentation.
 def resources(update, context):
     global COMMAND
     COMMAND = 'resources'
@@ -84,19 +96,24 @@ def resources(update, context):
     update.message.reply_text("Just kidding!")
     time.sleep(0.1)
     update.message.reply_text("I know you can make an even smatter bot. So register yourself fast and grab this chance to learn and showcase your creativity.\nSee you at the Hackathon!!")
-        
+
+# Chat command: It will resolve user's query regarding hackathon.
 def chat(update, context):
     global COMMAND
     COMMAND = 'chat'
-    update.message.reply_text("How can I help you?") 
+    update.message.reply_text("How can I help you?")
 
+# Set_Reminder: User-specified date and time will be used to set the reminder 
+# and remind the user on that day that the hackathon is approaching.
 def set_reminder(update, context, user_input):
     d, t = user_input.split("\n")[0], user_input.split("\n")[1]
     d = list(map(int, d.split("-")))
     t = list(map(int, t.split(":")))
     entered_date = datetime.datetime(d[0], d[1], d[2], t[0], t[1])
+    # Extracting presnt date and time
     present_date_datetime = datetime.datetime.now()
     difference = entered_date - present_date_datetime
+    # total seconds
     time_difference_in_seconds = difference.total_seconds()
 
     # Schedule the reminder using the time difference
@@ -105,6 +122,7 @@ def set_reminder(update, context, user_input):
     time.sleep(1)
     help(update, context)
 
+# Send_reminder: It will send reminder on the date time set by the user
 def send_reminder(context):
     # Send the reminder message to the user
     context.bot.send_message(chat_id=context.job.context, text="REMINDER:\nBuck Up Mate, Hackathon is approaching !!\nI hope you are all decked up for the submission. Excited to meet my fellow bot.")
@@ -112,9 +130,11 @@ def send_reminder(context):
 def reminders(update, context):
     global COMMAND
     COMMAND = 'reminders'
+    # tells the user the correct format
     update.message.reply_text("""Enter Date(yyyy-mm-dd): 
 Enter Time (hh:mm)""")
 
+# Contact: It will give the contact details of organisers
 def contact(update, context):
     global COMMAND
     COMMAND = 'contact'
@@ -125,12 +145,15 @@ def contact(update, context):
     Instagram Handle: @BotsAroundUs
     ''')
 
+# Announcements: It will show if there are any updates/notice by the admin
 def announcements(update, context):
     global COMMAND
     COMMAND = 'announcements'
     update.message.reply_text("ANNOUNCEMENTS:\nNo new announcements!")
     help(update, context)
 
+# handle_message : It is helping to recognise the command entered by user whichis not a command
+# and also handling is the user writes something unwanted
 def handle_message(update, context):
     global COMMAND
     usertext = update.message.text
@@ -146,13 +169,13 @@ def handle_message(update, context):
         save_feedback(update, context, usertext)
     elif COMMAND == 'chat':
         detected_language = translator.detect(usertext).lang
-        # print(detected_language)
         if detected_language != 'en':
             translated_text = translator.translate(usertext, dest='en').text
             update.message.reply_text(rp.get_response(translated_text))
         else:
             update.message.reply_text(rp.get_response(usertext))
 
+# Is_invalid: Checking constraints for mobile number
 def is_invalid(number):
     if len(number) != 10:
         return True
@@ -163,6 +186,7 @@ def is_invalid(number):
             return True
     return False
 
+# Write_record: Writes the details entered by user into csv file after validating them
 def write_record(details):
     file = open('registrationDetails.csv', 'a+', newline ='')
  
@@ -170,6 +194,7 @@ def write_record(details):
         write = csv.writer(file)
         write.writerow(details)
 
+# Not_primary: Checks if the entered email id is already registered or not.
 def not_primary(email_id):
     with open('registrationDetails.csv', 'r') as fp:
         s = fp.read()
@@ -185,10 +210,9 @@ def not_primary(email_id):
                 return True
     return False
 
+# get_details: It takes input from users about the details of team members and validates them.
 def get_details(update, context, user_input):
-        # print(user_input)
         details = user_input.split("\n")
-        # print(details)
         if len(details) != 5:
             update.message.reply_text("Insufficient Details")
         else:
@@ -214,6 +238,7 @@ def get_details(update, context, user_input):
                 update.message.reply_text("You have successfully registered for the Bots Around Us hackathon.")
                 update.message.reply_text("Excited to see that you are keen to learn and participate. You can explore the /resources and /confirm sections as well.")
 
+# register command: Handles the registration process
 def register(update, context):
     global COMMAND
     COMMAND = 'register'
@@ -226,6 +251,7 @@ Your Full Name
 Your Email ID
 Your Phone Number""")
 
+#confirm_details: It confirms the registration of user and return their details.
 def confirm_details(update, context, email_id):
     data  = ""
     with open('registrationDetails.csv', 'r+') as fp:
@@ -254,6 +280,7 @@ Date Of Registration : {}""".format(entries[0], entries[1], entries[2], entries[
     time.sleep(1)
     help(update, context)
 
+# confirm: Confirms the registration of user by checking the email id
 def confirm(update, context):
     global COMMAND
     COMMAND = 'confirm'
@@ -305,16 +332,16 @@ Date Of Registration : {}""".format(entries[0], entries[1], entries[2], entries[
         update.message.reply_text("If there was a particular problem that you faced please let us know in the /feedback section")
         time.sleep(1)
         help(update, context)
-        # COMMAND = 'cancel_confirmation'
-
     else:
         update.message.reply_text("This Email Id is not registered yet.")
 
+# Cancel: Cancels the registration of user
 def cancel(update, context):
     global COMMAND
     COMMAND = 'cancel'
     update.message.reply_text("Enter your Email ID to cancel your registration.")
 
+# Save_feedback: Saves the feeback given by user in text file.
 def save_feedback(update, context, usertext):
     f = open('feedback.txt', 'a+')
     f.write(usertext + "\n")
@@ -324,6 +351,7 @@ def save_feedback(update, context, usertext):
     time.sleep(1)
     help(update, context)
 
+# Feedback: Allows user to give feedback .
 def feedback(update, context):
     global COMMAND
     COMMAND = 'feedback'
@@ -332,6 +360,7 @@ def feedback(update, context):
 updater = telegram.ext.Updater(TOKEN, use_context=True)
 disp = updater.dispatcher
 
+# Adding all functions as handlers
 disp.add_handler(telegram.ext.CommandHandler('start',start))
 disp.add_handler(telegram.ext.CommandHandler('help',help))
 disp.add_handler(telegram.ext.CommandHandler('hackathon',hackathon))
