@@ -1,50 +1,140 @@
-import telegram.ext 
 from decouple import config
 from datetime import date
 import csv
 import time
+import telegram
+import telegram.ext 
+import datetime
+from telegram.ext import Updater, CommandHandler
+import long_responses as long
+import responses as rp
+import pandas as pd
+import emoji
 
 USERNAME = config('USERNAME')
 TOKEN = config('TOKEN')
+COMMAND = "init"
 
 def start(update, context):
-    update.message.reply_text("""Hello!
-    Type /help to see the available commands 
-    """)
+    global COMMAND
+    COMMAND = 'start'
+    update.message.reply_text(emoji.emojize("Hello! :open_hands:\nI am Sylvie, bot head at 'Bots Around Us'. :robot:\nTo dive in type /help."))
     
 def help(update,context):
-    update.message.reply_text("""
-    The following commands are avilable:
-    
-    /help -> This message
-    /hackathonDetails  -> Get all the details about the Hackathon!!
-    /registration -> Register yourself for the hackathon here
-    /resources -> Dive in to explore the resources
-    /queries -> Post your queries here
-    /reminders -> Set a reminder here
-    /contact -> contact information 
-    """)
-    
-def hackathonDetails(update, context):
-    update.message.reply_text("Details of the hackathon are as follows")
+    global COMMAND
+    COMMAND = 'help'
+    update.message.reply_text(emoji.emojize("""I can help you with the following:  
+    /start         -> Welcome to the channel
+    /help          -> This message
+    /hackathon     -> Details of the Hackathon 
+    /registration  -> Handles the registration process
+    /resources     -> Shares the resources 
+    /chat          -> Handles the FAQ's of student
+    /reminders     -> Gives reminders for registered students
+    /contact       -> contact information 
+    """))
+
+def hackathon(update, context):
+    global COMMAND
+    COMMAND = 'hackathon'
+    time.sleep(0.5)
+    update.message.reply_text("So, 'Bots Around Us' is a hackathon with a vision of building fun and beautiful bots like me.\n\nUnder this student-led hackathon you will get a chance to compete with participants all over India. The team who will build the best bot will be declared as winner!!")
+    time.sleep(0.8)
+    update.message.reply_text('''
+The details are as followed:
+
+1. Schedule : 26-27th Feb 2023
+2. Location : Online
+3. Rules: Register before 18th Feb.
+    You can use any tech stack to build my fellow bot friends.
+4. Prizes : The winner will be getting a cash prize of Rs. 10,000/-.
+
+All the participants will be getting participation certis signed by Meta Head''')
+    time.sleep(1)
+    update.message.reply_text("Isn't it interesting??")
+    time.sleep(0.8)
+    update.message.reply_text("What are you waiting for? Head to '/registration' to register yourself!!")
+
+def registration(update, context):
+    global COMMAND
+    COMMAND = 'registration'
+    update.message.reply_text("""I can help you with the following:
+
+/register -> Register yourself for the hackathon
+/confirm  -> Confirm your registration
+/cancel   -> Cancel your registration""")
 
 def resources(update, context):
-    update.message.reply_text("""You can refer to the following resources -
-    https://medium.com/@ManHay_Hong/how-to-create-a-telegram-bot-and-send-messages-with-python-4cf314d9fa3e
-    https://medium.com/spidernitt/how-to-create-your-own-telegram-bot-63d1097999b6
+    global COMMAND
+    COMMAND = 'resources'
+    update.message.reply_text("tutorial link 1: https://www.youtube.com/watch?v=PTAkiukJK7E\ntutorial link 2: https://www.youtube.com/watch?v=CNkiPN_WZfA")
+    time.sleep(0.1)
+    update.message.reply_text('''
+    Sample Projects:
+    https://www.pragnakalp.com/create-telegram-bot-using-python-tutorial-with-examples/
+    
+    https://pythonprogramming.org/making-a-telegram-bot-using-python/                              
+                              ''')
+    time.sleep(0.2)
+    update.message.reply_text("Explore these tutorials to see how smart bots like me are made.")
+    time.sleep(3)
+    update.message.reply_text("just kidding!")
+    time.sleep(0.1)
+    update.message.reply_text(" I know you can make an even smatter bot. So register yourself fast.\nSee you at the Hackathon!!")
+        
+def chat(update, context):
+    global COMMAND
+    COMMAND = 'chat'
+    update.message.reply_text("What is troubling you?") 
 
-    These sample projects can also 
-    """)
+def set_reminder(update, context, user_input):
+    d, t = user_input.split("\n")[0], user_input.split("\n")[1]
+    d = list(map(int, d.split("-")))
+    t = list(map(int, t.split(":")))
+    entered_date = datetime.datetime(d[0], d[1], d[2], t[0], t[1])
+    present_date_datetime = datetime.datetime.now()
+    difference = entered_date - present_date_datetime
+    time_difference_in_seconds = difference.total_seconds()
 
-# def record_details(details):
-#     f = open
+    # Schedule the reminder using the time difference
+    context.job_queue.run_once(send_reminder, time_difference_in_seconds, context=update.message.chat_id)
+    update.message.reply_text("Reminder set for {} and {}".format(d, t))
+    time.sleep(1)
+    help(update, context)
 
-def record_details(details):
-    file = open('resgitrationDetails.csv', 'a+', newline ='')
- 
-    with file:   
-        write = csv.writer(file)
-        write.writerow(details)
+def send_reminder(context):
+    # Send the reminder message to the user
+    context.bot.send_message(chat_id=context.job.context, text="REMINDER:\nBuck Up Mate, Hackathon is approaching !!\nI hope you are all decked up for the submission. Excited to meet my fellow bot.")
+
+def reminders(update, context):
+    global COMMAND
+    COMMAND = 'reminders'
+    update.message.reply_text("""Enter Date(yyyy-mm-dd): 
+Enter Time (hh:mm)""")
+
+def contact(update, context):
+    global COMMAND
+    COMMAND = 'contact'
+    update.message.reply_text('''
+    Reach out to the organisers via:
+    Ph No: +91 923497621
+    Email id: botsaroundus@gmail.com
+    Instagram Handle: @BotsAroundUs
+    ''')
+
+def handle_message(update, context):
+    global COMMAND
+    usertext = update.message.text
+    if COMMAND == 'register':
+        get_details(update, context, usertext)
+    elif COMMAND == 'confirm':
+        confirm_details(update, context, usertext)
+    elif COMMAND == 'cancel':
+        delete_record(update, context, usertext)
+    elif COMMAND == 'reminders':
+        set_reminder(update, context, usertext)
+    elif COMMAND == 'chat':
+        update.message.reply_text(rp.get_response(usertext))
 
 def is_invalid(number):
     if len(number) != 10:
@@ -56,70 +146,170 @@ def is_invalid(number):
             return True
     return False
 
+def write_record(details):
+    file = open('registrationDetails.csv', 'a+', newline ='')
+ 
+    with file:   
+        write = csv.writer(file)
+        write.writerow(details)
+
+def not_primary(email_id):
+    with open('registrationDetails.csv', 'r') as fp:
+        s = fp.read()
+        # print(s)
+        for row in s.split("\n"):
+            print(row)
+            if len(row) == 0:
+                return False
+            print(row)
+            words = row.split(",")
+            print(words)
+            if words[3] == email_id:
+                return True
+    return False
+
+def get_details(update, context, user_input):
+        # print(user_input)
+        details = user_input.split("\n")
+        # print(details)
+        if len(details) != 5:
+            update.message.reply_text("Insufficient Details")
+        else:
+            members = int(details[0])
+            flag = 0
+            if members not in {1, 2, 3}:
+                update.message.reply_text("Number of members can only be 1 ,2 or 3")
+                flag = 1
+            if '@' not in details[3] or '.' not in details[3]:
+                update.message.reply_text("Please Enter Valid Email")
+                flag = 1
+            if is_invalid(details[4]):
+                update.message.reply_text("Please Enter valid 10 digit mobile number")
+                flag = 1
+            
+            if not_primary(details[3]):
+                flag = 1
+                update.message.reply_text("This email is already registered. Please use another id.")
+            if flag == 0:
+                now = date.today()
+                details.append(now)
+                write_record(details)
+                update.message.reply_text("You have successfully registered for the Bots Around Us hackathon.")
+                update.message.reply_text("Excited to see that you are keen to learn and participate. You can explore the \resources and \confirm sections as well.")
+
 def register(update, context):
-    update.message.reply_text("""Welcome to the registration portal. Please provide the following details""")
-    update.message.reply_text("No of team Members")
-    members = update.message.text
-    print(members)
-    update.message.reply_text("Team Name")
-    time.sleep(5)
-    team_name = update.message.text
-    member_details = [members, team_name]
-    # for i in range(1, members + 1):
-    #     update.message.reply_text("Full Name for member " + i)
-    #     name = update.message.text
-    #     update.message.reply_text("Email Address for member " + i)
-    #     email = update.message.text
-    #     while '@' not in email or "." not in email:
-    #         update.message.reply_text("Please Enter valid email")
-    #         email = update.message.text
-    #     update.message.reply_text("Mobile Number for member " + i)
-    #     number = update.message.text
-    #     while is_invalid(number):
-    #         update.message.reply_text("Please Enter valid 10 digit mobil number")
-    #         number = update.message.text
-    #     now = date.today()
-    #     member_details.extend([name, email, number, now])
-        # print(member_details)
-        # record_details(member_details)  
+    global COMMAND
+    COMMAND = 'register'
 
-def registration(update, context):
-    update.message.reply_text("""The following commands are avilable:
-    
-    /register -> Register yourself for the hackathon
-    /confirm  -> Confirm your registration
-    /cancel -> Cancel your registration""")
-    
-    # user_input = update.message.text
+    update.message.reply_text("""Welcome to the registration portal. Please provide the following details in separate lines.""")
+    time.sleep(0.5)
+    update.message.reply_text("""No Of Members
+Team Name
+Your Full Name
+Your Email ID
+Your Phone Number""")
 
-    
-def queries(update, context):
-    update.message.reply_text("Please type your queries")
-    
-def reminders(update, context):
-    update.message.reply_text("Welcome to reminders")
-    
-def contact(update, context):
-    update.message.reply_text("You can contact on the official mailID - ")
+def confirm_details(update, context, email_id):
+    data  = ""
+    with open('registrationDetails.csv', 'r+') as fp:
+        s = fp.read()
+        for row in s.split("\n"):
+            if len(row) == 0:
+                break
+            words = row.split(",")
+            # print(words)
+            if words[3] == email_id:
+                data = row
+                break
 
-# def handle_message(update, context):
-#     update.message.reply_text(f"You said {update.message.text}, use the commands using /")
+    if len(data) != 0:
+        update.message.reply_text("You are registered and your details are as follows:")
+        entries = data.split(",")
+        update.message.reply_text("""No Of Members: {}
+Team Name: {}
+Full Name: {}
+Email ID: {}
+Phone Number: {}
+Date Of Registration : {}""".format(entries[0], entries[1], entries[2], entries[3], entries[4], entries[5]))
+    else:
+        update.message.reply_text("This Email Id is not registered yet.")
+    
+    time.sleep(1)
+    help(update, context)
 
+def confirm(update, context):
+    global COMMAND
+    COMMAND = 'confirm'
+    update.message.reply_text("Enter your Email ID to confirm your registration.")
 
-# Token = (" ")
-#print(bot.get_me())
+def delete_record(update, context, email_id):
+    global COMMAND
+    data  = ""
+    with open('registrationDetails.csv', 'r+') as fp:
+        s = fp.read()
+        for row in s.split("\n"):
+            if len(row) == 0:
+                break
+            words = row.split(",")
+            # print(words)
+            if words[3] == email_id:
+                data = row
+                break
+
+    if len(data) != 0:
+        update.message.reply_text("Your details are as follows:")
+        entries = data.split(",")
+        update.message.reply_text("""No Of Members: {}
+Team Name: {}
+Full Name: {}
+Email ID: {}
+Phone Number: {}
+Date Of Registration : {}""".format(entries[0], entries[1], entries[2], entries[3], entries[4], entries[5]))
+        update.message.reply_text("Cancelling your registration")
+        time.sleep(1)
+        input = open('registrationDetails.csv', 'r+')
+        output = open('edit.csv', 'w+')
+        writer = csv.writer(output)
+        for row in csv.reader(input):
+            if row[3] != email_id:
+                writer.writerow(row)
+        input.close()
+        output.close()
+
+        input = open('edit.csv', 'r+')
+        output = open('registrationDetails.csv', 'w+')
+        writer = csv.writer(output)
+        for row in csv.reader(input):
+            writer.writerow(row)
+        input.close()
+        output.close()
+        update.message.reply_text("Your registration was cancelled. Sorry to see you go.")
+        time.sleep(1)
+        help(update, context)
+        # COMMAND = 'cancel_confirmation'
+
+    else:
+        update.message.reply_text("This Email Id is not registered yet.")
+
+def cancel(update, context):
+    global COMMAND
+    COMMAND = 'cancel'
+    update.message.reply_text("Enter your Email ID to cancel your registration.")
+
 updater = telegram.ext.Updater(TOKEN, use_context=True)
 disp = updater.dispatcher
 
 disp.add_handler(telegram.ext.CommandHandler('start',start))
 disp.add_handler(telegram.ext.CommandHandler('help',help))
-disp.add_handler(telegram.ext.CommandHandler('hackathonDetails',hackathonDetails))
+disp.add_handler(telegram.ext.CommandHandler('hackathon',hackathon))
 disp.add_handler(telegram.ext.CommandHandler('registration',registration))
 disp.add_handler(telegram.ext.CommandHandler('resources',resources))
-disp.add_handler(telegram.ext.CommandHandler('queries',queries))
+disp.add_handler(telegram.ext.CommandHandler('chat',chat))
 disp.add_handler(telegram.ext.CommandHandler('reminders',reminders))
 disp.add_handler(telegram.ext.CommandHandler('contact',contact))
 disp.add_handler(telegram.ext.CommandHandler('register',register))
-# disp.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.text, handle_message))
+disp.add_handler(telegram.ext.CommandHandler('confirm',confirm))
+disp.add_handler(telegram.ext.CommandHandler('cancel',cancel))
+disp.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.text, handle_message))
 updater.start_polling()
 updater.idle()
