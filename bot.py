@@ -10,10 +10,12 @@ import long_responses as long
 import responses as rp
 import pandas as pd
 import emoji
+from googletrans import Translator
 
 USERNAME = config('USERNAME')
 TOKEN = config('TOKEN')
 COMMAND = "init"
+translator = Translator(service_urls=['translate.googleapis.com'])
 
 def start(update, context):
     global COMMAND
@@ -31,7 +33,9 @@ def help(update,context):
     /resources     -> Shares the resources 
     /chat          -> Handles the FAQ's of student
     /reminders     -> Gives reminders for registered students
-    /contact       -> contact information 
+    /contact       -> Contact information 
+    /feedback      -> Enter feedback for this bot
+    /announcements -> Recent Notices and Announcements
     """))
 
 def hackathon(update, context):
@@ -63,6 +67,7 @@ def registration(update, context):
 /register -> Register yourself for the hackathon
 /confirm  -> Confirm your registration
 /cancel   -> Cancel your registration""")
+    update.message.reply_text("Make sure to register nefore teh deadline - 18th February as this will give you an opportunity to collaborate and compete with students from different universities and develop a telegram bot. You stand to win exciting cash prizes and certificates. It's a chance to learn, develop and present your protypes and seek feedback on the same. ")
 
 def resources(update, context):
     global COMMAND
@@ -78,14 +83,14 @@ def resources(update, context):
     time.sleep(0.2)
     update.message.reply_text("Explore these tutorials to see how smart bots like me are made.")
     time.sleep(3)
-    update.message.reply_text("just kidding!")
+    update.message.reply_text("Just kidding!")
     time.sleep(0.1)
-    update.message.reply_text(" I know you can make an even smatter bot. So register yourself fast.\nSee you at the Hackathon!!")
+    update.message.reply_text("I know you can make an even smatter bot. So register yourself fast and grab this chance to learn and showcase your creativity.\nSee you at the Hackathon!!")
         
 def chat(update, context):
     global COMMAND
     COMMAND = 'chat'
-    update.message.reply_text("What is troubling you?") 
+    update.message.reply_text("How can I help you?") 
 
 def set_reminder(update, context, user_input):
     d, t = user_input.split("\n")[0], user_input.split("\n")[1]
@@ -122,6 +127,11 @@ def contact(update, context):
     Instagram Handle: @BotsAroundUs
     ''')
 
+def announcements(update, context):
+    global COMMAND
+    COMMAND = 'announcements'
+    update.message.reply_text("ANNOUNCEMENTS:\nNo new announcements!")
+
 def handle_message(update, context):
     global COMMAND
     usertext = update.message.text
@@ -133,8 +143,16 @@ def handle_message(update, context):
         delete_record(update, context, usertext)
     elif COMMAND == 'reminders':
         set_reminder(update, context, usertext)
+    elif COMMAND == 'feedback':
+        save_feedback(update, context, usertext)
     elif COMMAND == 'chat':
-        update.message.reply_text(rp.get_response(usertext))
+        detected_language = translator.detect(usertext).lang
+        print(detected_language)
+        if detected_language != 'en':
+            translated_text = translator.translate(usertext, dest='en').text
+            update.message.reply_text(rp.get_response(translated_text))
+        else:
+            update.message.reply_text(rp.get_response(usertext))
 
 def is_invalid(number):
     if len(number) != 10:
@@ -284,6 +302,8 @@ Date Of Registration : {}""".format(entries[0], entries[1], entries[2], entries[
         input.close()
         output.close()
         update.message.reply_text("Your registration was cancelled. Sorry to see you go.")
+        time.sleep(0.5)
+        update.message.reply_text("If there was a particular problem that you faces please let us know in the /feedback section")
         time.sleep(1)
         help(update, context)
         # COMMAND = 'cancel_confirmation'
@@ -295,6 +315,20 @@ def cancel(update, context):
     global COMMAND
     COMMAND = 'cancel'
     update.message.reply_text("Enter your Email ID to cancel your registration.")
+
+def save_feedback(update, context, usertext):
+    f = open('feedback.txt', 'a+')
+    f.write(usertext + "\n")
+    f.close()
+    time.sleep(1)
+    update.message.reply_text("Feedback was received successfully. Hope to continue providing services to you.")
+    time.sleep(1)
+    help(update, context)
+
+def feedback(update, context):
+    global COMMAND
+    COMMAND = 'feedback'
+    update.message.reply_text("We would love to hear what you think about the experience. Don't hold back and let us know everything.")
 
 updater = telegram.ext.Updater(TOKEN, use_context=True)
 disp = updater.dispatcher
@@ -310,6 +344,8 @@ disp.add_handler(telegram.ext.CommandHandler('contact',contact))
 disp.add_handler(telegram.ext.CommandHandler('register',register))
 disp.add_handler(telegram.ext.CommandHandler('confirm',confirm))
 disp.add_handler(telegram.ext.CommandHandler('cancel',cancel))
+disp.add_handler(telegram.ext.CommandHandler('feedback',feedback))
+disp.add_handler(telegram.ext.CommandHandler('announcements',announcements))
 disp.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.text, handle_message))
 updater.start_polling()
 updater.idle()

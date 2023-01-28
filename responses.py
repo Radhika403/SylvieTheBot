@@ -35,7 +35,7 @@ def check_all_messages(message):
         highest_prob_list[bot_response] = message_probability(message, list_of_words, single_response, required_words)
 
     # Responses -------------------------------------------------------------------------------------------------------
-    response('Hello!', ['hello', 'hi', 'hey', 'sup', 'heyo'], single_response=True)
+    response('Hello!', ['hello', 'hi', 'hey', 'sup', 'heyo', 'greetings'], single_response=True)
     response('See you!', ['bye', 'goodbye'], single_response=True)
     response('I\'m doing fine, and you?', ['how', 'are', 'you', 'doing'], required_words=['how'])
     response('You\'re welcome!', ['thank', 'thanks','thankyou'], single_response=True)
@@ -57,6 +57,7 @@ def check_all_messages(message):
     response(long.q13,['confirm','registration'],required_words = ['confirm','registration'])
     response(long.q14, ['updates','update','changes','notice','notices','change','hackathon','hackathons'],required_words = ['notice','updates'])
     response(long.q15,['about','hackathon'],required_words = ['about','hackathon'])
+    response(long.q15,['what','hackathon'],required_words = ['what','hackathon'])
     response(long.q16,['how','register','hackathon'],required_words = ['how','register'])
     response(long.q17,['talk','organizer','coordinator','contact'],required_words = ['contact','organiser'])
     response(long.q18,['provide', 'information', 'other' ,'events','hackathons','hackathon','event'],required_words = ['other','event'])
