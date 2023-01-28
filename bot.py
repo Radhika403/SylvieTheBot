@@ -5,10 +5,10 @@ import time
 import telegram
 import telegram.ext 
 import datetime
-from telegram.ext import Updater, CommandHandler
+# from telegram.ext import Updater, CommandHandler
 import long_responses as long
 import responses as rp
-import pandas as pd
+# import pandas as pd
 import emoji
 from googletrans import Translator
 
@@ -67,7 +67,7 @@ def registration(update, context):
 /register -> Register yourself for the hackathon
 /confirm  -> Confirm your registration
 /cancel   -> Cancel your registration""")
-    update.message.reply_text("Make sure to register nefore teh deadline - 18th February as this will give you an opportunity to collaborate and compete with students from different universities and develop a telegram bot. You stand to win exciting cash prizes and certificates. It's a chance to learn, develop and present your protypes and seek feedback on the same. ")
+    update.message.reply_text("Make sure to register before the deadline - 18th February as this will give you an opportunity to collaborate and compete with students from different universities and develop a telegram bot. You stand to win exciting cash prizes and certificates. It's a chance to learn, develop and present your protypes and seek feedback on the same. ")
 
 def resources(update, context):
     global COMMAND
@@ -131,6 +131,7 @@ def announcements(update, context):
     global COMMAND
     COMMAND = 'announcements'
     update.message.reply_text("ANNOUNCEMENTS:\nNo new announcements!")
+    help(update, context)
 
 def handle_message(update, context):
     global COMMAND
@@ -176,12 +177,12 @@ def not_primary(email_id):
         s = fp.read()
         # print(s)
         for row in s.split("\n"):
-            print(row)
+            # print(row)
             if len(row) == 0:
                 return False
-            print(row)
+            # print(row)
             words = row.split(",")
-            print(words)
+            # print(words)
             if words[3] == email_id:
                 return True
     return False
@@ -213,7 +214,7 @@ def get_details(update, context, user_input):
                 details.append(now)
                 write_record(details)
                 update.message.reply_text("You have successfully registered for the Bots Around Us hackathon.")
-                update.message.reply_text("Excited to see that you are keen to learn and participate. You can explore the \resources and \confirm sections as well.")
+                update.message.reply_text("Excited to see that you are keen to learn and participate. You can explore the /resources and /confirm sections as well.")
 
 def register(update, context):
     global COMMAND
@@ -303,7 +304,7 @@ Date Of Registration : {}""".format(entries[0], entries[1], entries[2], entries[
         output.close()
         update.message.reply_text("Your registration was cancelled. Sorry to see you go.")
         time.sleep(0.5)
-        update.message.reply_text("If there was a particular problem that you faces please let us know in the /feedback section")
+        update.message.reply_text("If there was a particular problem that you faced please let us know in the /feedback section")
         time.sleep(1)
         help(update, context)
         # COMMAND = 'cancel_confirmation'
