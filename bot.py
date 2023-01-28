@@ -5,10 +5,8 @@ import time
 import telegram
 import telegram.ext 
 import datetime
-# from telegram.ext import Updater, CommandHandler
 import long_responses as long
 import responses as rp
-# import pandas as pd
 import emoji
 from googletrans import Translator
 
