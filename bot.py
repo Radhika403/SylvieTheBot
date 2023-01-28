@@ -147,7 +147,7 @@ def handle_message(update, context):
         save_feedback(update, context, usertext)
     elif COMMAND == 'chat':
         detected_language = translator.detect(usertext).lang
-        print(detected_language)
+        # print(detected_language)
         if detected_language != 'en':
             translated_text = translator.translate(usertext, dest='en').text
             update.message.reply_text(rp.get_response(translated_text))

@@ -1,3 +1,4 @@
 pip3 install python-telegram-bot
 pip3 install python-decouple
 pip3 install emoji
+pip3 install googletrans==3.1.0a0
