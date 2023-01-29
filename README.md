@@ -1,5 +1,5 @@
-###Sylvie - The Bot
-![Alt](iimages/SylvieTheBot.jpeg)
+### Sylvie - The Bot
+![Alt](images/SylvieTheBot.jpeg)
 
 Our witty bot “Sylvie” is designed to solve all the hackathon related queries and issues that a participant faces. 
 
@@ -21,7 +21,7 @@ Along with all these functionalitites, it acts as a fun & motivating friend who 
 
 ![Alt](images/FlowChart.png)
 
-###Tech Stacks
+### Tech Stacks
 1. Python: python-telegram-bot (13.7), googletrans (3.1.0a0), emoji, datetime, time, csv, os/python-decouple
 2. Replit: The deployment of this bot is done with the help of replit. The platform is used to host and share our bot.
 3. NLP: Handles the /chat section of the bot. Uses the bag of words to identify the closest response.
