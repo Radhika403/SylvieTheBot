@@ -43,7 +43,7 @@ def check_all_messages(message):
     response('Great to hear!',['fine','good','doing','well'],single_response = True)
     response('I am Sylvie-the bot! I am here to guide you through this journey',['who','are','you'],required_words = ['who','are','you'])
     # Longer responses
-    response(long.q1, ['what','schedule','timeline'],required_words= ['schedule','timeline'] )
+    response(long.q1, ['what','schedule','timeline'],required_words= ['schedule'] )
     response(long.q2,['maximum','team','size'],required_words = ['team','size'])
     response(long.q2_,['team','limit'],required_words = ['team','limit'])
     response(long.q3,['participate','team','can'],required_words = ['team','can'])
@@ -82,6 +82,7 @@ def check_all_messages(message):
     response(long.q30,['cancel','registeration'],required_words = ['cancel','registeration'])
     response(long.q31,['who','judge'],required_words = ['who','judge'])
     response(long.q32,['commands','functionalities','how'],required_words = ['commands'])
+    response(long.q33,['can','I','do'],required_words = ['can', 'do'])
     
     best_match = max(highest_prob_list, key=highest_prob_list.get)
     # print(highest_prob_list)

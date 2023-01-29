@@ -31,16 +31,16 @@ def help(update,context):
     global COMMAND
     COMMAND = 'help'
     update.message.reply_text(emoji.emojize("""I can help you with the following:  
-    /start         -> Welcome to the channel
-    /help          -> This message
-    /hackathon     -> Details of the Hackathon 
-    /registration  -> Handles the registration process
-    /resources     -> Shares the resources 
-    /chat          -> Handles the FAQ's of student
-    /reminders     -> Gives reminders for registered students
-    /contact       -> Contact information 
-    /feedback      -> Enter feedback for this bot
-    /announcements -> Recent Notices and Announcements
+/start -> Welcome to the channel
+/help  -> This message
+/hackathon -> Details of the Hackathon 
+/registration -> Handles the registration process
+/resources -> Shares the resources 
+/chat -> Handles the FAQ's of student
+/reminders -> Gives reminders for registered students
+/contact -> Contact information 
+/feedback -> Enter feedback for this bot
+/announcements -> Recent Notices and Announcements
     """))
 
 # hackthon command:It has all the details about the hackathon
@@ -54,7 +54,7 @@ def hackathon(update, context):
     update.message.reply_text('''
 The details are as followed:
 
-1. Schedule : 26-27th Feb 2023
+1. Schedule : 25-27th Feb 2023
 2. Location : Online
 3. Rules: Register before 18th Feb.
     You can use any tech stack to build my fellow bot friends.
@@ -96,6 +96,8 @@ def resources(update, context):
     update.message.reply_text("Just kidding!")
     time.sleep(0.1)
     update.message.reply_text("I know you can make an even smatter bot. So register yourself fast and grab this chance to learn and showcase your creativity.\nSee you at the Hackathon!!")
+    time.sleep(2)
+    help(update, context)
 
 # Chat command: It will resolve user's query regarding hackathon.
 def chat(update, context):

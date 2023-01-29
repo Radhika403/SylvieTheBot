@@ -31,7 +31,7 @@ q24 = "Even I want to see you there sugarcup!! Head to /register to register you
 q25 = "Anyone currently enrolled in a university is allowed to participate in this hackathon. Apart from that some important factors like excitement,zeal to learn etc. are also required.\nhehehehe"
 q24_ = "Even I want to see you participate honeycup!! Head to /register to register yourself for the hackathon."
 q25_ = "Anyone who is currently enrolled in a university is allowed to participate in this hackathon. Apart from that, some important factors like excitement,zeal to learn etc. are also required.\nhehehehe"
-q26 = "Hackathon is scheduled for 26-27th February 2023. The registrations are open till 18th February."
+q26 = "Hackathon is scheduled for 25-27th February 2023. The registrations are open till 18th February."
 q27 = "Submission deadline is 27th February 2023."
 q28 = "Judgement Criteria: The bot that meets all the testcases and is most interactive and creative wins!!"
 q28_ = "Judging Criteria: The bot that meets all the testcases and is most interactive and creative wins!!"
@@ -39,6 +39,7 @@ q29 = "Head to /registeration -> /register"
 q30 = "Head to /registeration -> /cancel"
 q31 = "Sorry! I am not allowed to disclose that. The Judge will be announced on the start day of Hackathon"
 q32 = "You can use the /help option to see possible commands"
+q33 = "Yes! I believe in you. You will get to learn so much from this hackathon and collaborate with other students. You should surely give this a chance. ou might just win as well."
 
 def unknown():
     response = ["Could you please re-phrase that? ",
