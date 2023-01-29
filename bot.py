@@ -14,6 +14,7 @@ from googletrans import Translator
 USERNAME = config('USERNAME')
 TOKEN = config('TOKEN')
 COMMAND = "init"
+# TOKEN = os.environ['TOKEN']
 
 # Making object of Translator
 translator = Translator(service_urls=['translate.googleapis.com'])
