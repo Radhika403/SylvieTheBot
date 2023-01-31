@@ -25,6 +25,8 @@ Along with all these functionalitites, it acts as a fun & motivating friend who 
 1. Python: python-telegram-bot (13.7), googletrans (3.1.0a0), emoji, datetime, time, csv, os/python-decouple
 2. Replit: The deployment of this bot is done with the help of replit. The platform is used to host and share our bot.
 3. NLP: Handles the /chat section of the bot. Uses the bag of words to identify the closest response.
-4. Files as database: Csv files are used to store data of registered students. It is also used to fetch data for confirmation and cancellation. • Text Files are also used to store feedback.
+4. Files as database: 
+Csv files are used to store data of registered students. It is also used to fetch data for confirmation and cancellation. 
+Text Files are also used to store feedback.
 
 ![Alt](images/WorkingBot.png)
