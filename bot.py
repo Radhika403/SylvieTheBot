@@ -17,7 +17,6 @@ COMMAND = "init"
 # TOKEN = os.environ['TOKEN']
 
 # Making object of Translator
-# It is as per Indian time zone
 translator = Translator(service_urls=['translate.googleapis.com'])
 
 # Start command to start the bot
